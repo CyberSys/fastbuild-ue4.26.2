@@ -28,7 +28,7 @@
 
         // Library
         //--------------------------------------------------------------------------
-        ObjectList( '$ProjectName$-Lib-$Platform$-$BuildConfigName$' )
+        ObjectList( '$ProjectName$-CPP-$Platform$-$BuildConfigName$' )
         {
             // Input
             .CompilerInputUnity         = '$ProjectName$-Unity-$Platform$-$BuildConfigName$'
@@ -36,6 +36,10 @@
 
             // Output
             .CompilerOutputPath         = '$OutputBase$/$ProjectPath$/'
+        }
+        Alias( '$ProjectName$-Lib-$Platform$-$BuildConfigName$' )
+        {
+            .Targets = { '$ProjectName$-CPP-$Platform$-$BuildConfigName$' }
         }
         Alias( '$ProjectName$-$Platform$-$BuildConfigName$' ) { .Targets = '$ProjectName$-Lib-$Platform$-$BuildConfigName$' }
         ^'Targets_$Platform$_$BuildConfigName$' + { '$ProjectName$-$Platform$-$BuildConfigName$' }
