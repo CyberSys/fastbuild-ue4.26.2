@@ -4,7 +4,7 @@ This FASTBuild branch is based on v1.04, and modified to fit Unreal 4.26.2, curr
 ## Modification
  1. Replace host name with IP address.
  2. Modify to make official `FASTBuild.cs` happy.
- 3. Compress compiled object. [TODO]
+ 3. Compress compiled object.
 
 ## Build requirements
  - VS2019 Community 14.28.29910
