@@ -108,7 +108,7 @@ void WorkerBrokerage::InitBrokerage()
         }
     }
 
-    Network::GetHostName( m_HostName );
+    Network::GetHostName( m_HostName, true );
 
     UpdateBrokerageFilePath();
 
@@ -229,7 +229,7 @@ void WorkerBrokerage::SetAvailability( bool available )
                 AStackString<> ipAddress;
 
                 // Get host and domain name as FQDN could have changed
-                Network::GetHostName( hostName );
+                Network::GetHostName( hostName, true );
                 Network::GetDomainName( domainName );
 
                 // Resolve host name to ip address

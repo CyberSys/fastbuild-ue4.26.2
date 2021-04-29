@@ -13,7 +13,7 @@ This FASTBuild branch is based on v1.04, and modified to fit Unreal 4.26.2, curr
 If other platform or compiler is used, `.bff` file in `External/SDK` should be modified.
 
 ## Usage
- 1. Run official release `FBuile.exe All-x64-Release -dist -clean` in path `Code/`.
+ 1. Compile this project: run FBuild.exe (official v1.04 release) `FBuild.exe All-x64-Release -dist -clean` in path `Code/`.
  2. Clone `FBuild.exe` in `tmp/x64-Release/Tools/FBuild/FBuild` and `FBuildWorker.exe` in `tmp/x64-Release/Tools/FBuild/FBuildWorker` to `[UnrealEngine Source Code]/Engine/Extras/ThirdPartyNotUE/FASTBuild/Win64`.
  3. Done, you can start compiling ue now.
 

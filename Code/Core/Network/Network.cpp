@@ -24,7 +24,7 @@
 
 // GetHostName
 //------------------------------------------------------------------------------
-/*static*/ void Network::GetHostName( AString & hostName )
+/*static*/ void Network::GetHostName( AString & hostName, bool useIpInstead )
 {
     PROFILE_FUNCTION;
 
@@ -34,7 +34,25 @@
     if ( ::gethostname( buffer, 64 ) == 0 )
     {
         hostName = buffer;
+
+        if (useIpInstead)
+        {
+            in_addr inaddr;
+            inaddr.s_addr = GetHostIPFromName(hostName);
+            if (inaddr.s_addr > 0)
+            {
+                char saddr[INET_ADDRSTRLEN];
+                ::inet_ntop(AF_INET, &inaddr, saddr, INET_ADDRSTRLEN);
+                hostName = saddr;
+            }
+        }
+
         return;
+    }
+    else
+    {
+        hostName = "Unknown";
+        ASSERT( false && "This should never fail" );
     }
 
     ASSERT( false && "GetHostName should never fail" );
