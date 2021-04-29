@@ -10,7 +10,9 @@ This FASTBuild branch is based on v1.04, and modified to fit Unreal 4.26.2, curr
  - VS2019 Community 14.28.29910
  - Windows SDK 10.0.19041.0
 
-If other platform or compiler is used, `.bff` file in `External/SDK` should be modified.
+If different version platform or compiler is used, `.bff` file in `External/SDK` should be modified.
+
+For example, if you are using Windows SDK 10.0.17763.0, version number in `External/SDK/Windows/Windows10SDK.bff` should be modified. If you are using VS2019 Enterprise or a different version, version number in `External/SDK/VisualStudio/VisualStudio.bff` and `External/SDK/VisualStudio/VS2019.bff` should be modified.
 
 ## Usage
  1. Compile this project: run FBuild.exe (official v1.04 release) `FBuild.exe All-x64-Release -dist -clean` in path `Code/`.

@@ -16,6 +16,7 @@
 #include <Tools/FBuild/FBuildCore/Helpers/MultiBuffer.h>
 #include "Tools/FBuild/FBuildCore/WorkerPool/Job.h"
 #include "Tools/FBuild/FBuildCore/WorkerPool/JobQueue.h"
+#include "Tools/FBuild/FBuildCore/Helpers/Compressor.h"
 
 #include "Core/Env/ErrorFormat.h"
 #include "Core/FileIO/ConstMemoryStream.h"
@@ -500,6 +501,9 @@ void Client::Process( const ConnectionInfo * connection, const Protocol::MsgJobR
     uint32_t buildTime;
     ms.Read( buildTime );
     
+    bool isDataCompressed = false;
+    ms.Read( isDataCompressed );
+
     uint16_t remoteThreadId = 0;
     ms.Read( remoteThreadId );
 
@@ -547,6 +551,16 @@ void Client::Process( const ConnectionInfo * connection, const Protocol::MsgJobR
     if ( result == true )
     {
         // built ok - serialize to disc
+
+
+        Compressor c;
+        if (isDataCompressed)
+        {
+            c.Decompress(data);
+            data = c.GetResult();
+            dataSize = (uint32_t)c.GetResultSize();
+        }
+
         MultiBuffer mb( data, dataSize );
 
         ObjectNode * objectNode = job->GetNode()->CastTo< ObjectNode >();
