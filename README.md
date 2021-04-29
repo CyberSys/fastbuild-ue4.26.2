@@ -1,4 +1,23 @@
-# FASTBuild
+# FASTBuild-UE4 Fork
+This FASTBuild branch is based on v1.04, and modified to fit Unreal 4.26.2, currently only support **windows** platform.
+
+## Modification
+ 1. Replace host name with IP address.
+ 2. Modify to make official `FASTBuild.cs` happy.
+ 3. Compress compiled object. [TODO]
+
+## Build requirements
+ - VS2019 Community 14.28.29910
+ - Windows SDK 10.0.19041.0
+
+If other platform or compiler is used, `.bff` file in `External/SDK` should be modified.
+
+## Usage
+ 1. Run official release `FBuile.exe All-x64-Release -dist -clean` in path `Code/`.
+ 2. Clone `FBuild.exe` in `tmp/x64-Release/Tools/FBuild/FBuild` and `FBuildWorker.exe` in `tmp/x64-Release/Tools/FBuild/FBuildWorker` to `[UnrealEngine Source Code]/Engine/Extras/ThirdPartyNotUE/FASTBuild/Win64`.
+ 3. Done, you can start compiling ue now.
+
+# FASTBuild (v1.04)
 
 FASTBuild is a build system for Windows, OSX and Linux, supporting distributed compilation and object caching. It is used by many game developers, from small independent teams to some of the largest studios in the world.
 
