@@ -7,9 +7,8 @@ This [FASTBuild](https://github.com/fastbuild/fastbuild) branch is based on v1.0
  3. Compress compiled object. [#280d92e](https://github.com/VicentChen/fastbuild-ue4.26.2/commit/280d92e19fce3af4ac86211f73aac317936f7afa)
  4. Support building shaders. [#f99dcc9](https://github.com/VicentChen/fastbuild-ue4.26.2/commit/f99dcc9ce698b92caa788016d72c1c29e18df751)
 
-(\*Please use the latest source code in this repo. Commits above work only as references for you to modify FASTBuild or UE.)
-
 ## Build requirements
+
  - VS2019 Community 14.28.29910
  - Windows SDK 10.0.19041.0
 
@@ -18,6 +17,10 @@ If different version platform or compiler is used, `.bff` file in `External/SDK`
 For example, if you are using Windows SDK 10.0.17763.0, version number in `External/SDK/Windows/Windows10SDK.bff` should be modified. If you are using VS2019 Enterprise or a different version, version number in `External/SDK/VisualStudio/VisualStudio.bff` and `External/SDK/VisualStudio/VS2019.bff` should be modified.
 
 ## Usage
+
+**Some Notes:**
+ - Please use the latest source code in this repo. Commits listed above work only as references for your own modification.
+ - Some bugs about FASTBuild cache path frequently happened. Therefore, I hard-coded cache path in `UnrealEngine/*`. Please find `F:\\Cache` and modify them to your own cache path.
 
 ### Unreal Engine Source Code Building
  1. Compile this project: run FBuild.exe (official v1.04 release) `FBuild.exe All-x64-Release -dist -clean` in path `Code/`.
@@ -44,6 +47,7 @@ For example, if you are using Windows SDK 10.0.17763.0, version number in `Exter
     - If you are using cache, please make sure the cache path is properly written in bff file(or you can try to disable cache).
     - If you are using many core machine, like 28 cores or more, you can try to lower the local compiling thread to 16.
  - **Distributed shader compilation is much more slower than local.** If any remote machine didn't install DirectX, the whole compilation will failed. You need to check `%TEMP%/FASTBuild/FastBuildLog.log` to find which remote is the blacksheep. Then you should [download DirectX from here](https://www.microsoft.com/en-us/download/details.aspx?id=35).
+ - **Cache path is not correct.** 
 
 ## References
  1. For c++ compile problems: [FASTBuild documentation](https://www.fastbuild.org/docs/documentation.html)
