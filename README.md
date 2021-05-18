@@ -1,10 +1,11 @@
 # FASTBuild-UE4 Fork
-This FASTBuild branch is based on v1.04, and modified to fit Unreal 4.26.2, currently only support **windows** platform.
+This [FASTBuild](https://github.com/fastbuild/fastbuild) branch is based on v1.04, and modified to fit Unreal 4.26.2, currently only support **windows** platform.
 
-## Modification
- 1. Replace host name with IP address.
- 2. Modify to make official `FASTBuild.cs` happy.
- 3. Compress compiled object.
+## Features(Modifications)
+ 1. Replace host name with IP address. [#98a7f04](https://github.com/VicentChen/fastbuild-ue4.26.2/commit/98a7f04af24b0478278b80b68919db0136b46205)
+ 2. Modify for official `FASTBuild.cs`. [#2252692](https://github.com/VicentChen/fastbuild-ue4.26.2/commit/2252692fc51b1d086a6906516fb526d455bd1e36)
+ 3. Compress compiled object. [#280d92e](https://github.com/VicentChen/fastbuild-ue4.26.2/commit/280d92e19fce3af4ac86211f73aac317936f7afa)
+ 4. Support building shaders. [#f99dcc9](https://github.com/VicentChen/fastbuild-ue4.26.2/commit/f99dcc9ce698b92caa788016d72c1c29e18df751)
 
 ## Build requirements
  - VS2019 Community 14.28.29910
@@ -15,38 +16,31 @@ If different version platform or compiler is used, `.bff` file in `External/SDK`
 For example, if you are using Windows SDK 10.0.17763.0, version number in `External/SDK/Windows/Windows10SDK.bff` should be modified. If you are using VS2019 Enterprise or a different version, version number in `External/SDK/VisualStudio/VisualStudio.bff` and `External/SDK/VisualStudio/VS2019.bff` should be modified.
 
 ## Usage
+
+### Unreal Engine Source Code Building
  1. Compile this project: run FBuild.exe (official v1.04 release) `FBuild.exe All-x64-Release -dist -clean` in path `Code/`.
- 2. Clone `FBuild.exe` in `tmp/x64-Release/Tools/FBuild/FBuild` and `FBuildWorker.exe` in `tmp/x64-Release/Tools/FBuild/FBuildWorker` to `[UnrealEngine Source Code]/Engine/Extras/ThirdPartyNotUE/FASTBuild/Win64`.
- 3. Done, you can start compiling ue now.
+ 2. Clone `tmp/x64-Release/Tools/FBuild/FBuild/FBuild.exe` and in `tmp/x64-Release/Tools/FBuild/FBuildWorker/FBuildWorker.exe` to `[UnrealEngine Source Code]/Engine/Extras/ThirdPartyNotUE/FASTBuild/Win64`.
+ 3. (Optional) You may need to modify `FASTBuild.cs`. Please refer to `UnrealEngine/FASTBuild.cs` in this projet.
+ 4. Done, you can start compiling ue now.
 
-# FASTBuild (v1.04)
+### Unreal Engine Project Building
+**Notice that this instruction works for both official Unreal Engine release and your custom build.**
+ 1. Clone `tmp/x64-Release/Tools/FBuild/FBuild/FBuild.exe` and in `tmp/x64-Release/Tools/FBuild/FBuildWorker/FBuildWorker.exe` to somewhere, and add them to system path.
+ 2. (Optional) Modify `%APPDATA%/Unreal Engine/UnrealBuildTool/BuildConfiguration.xml`. Please refer to `FASTBuild.cs` and search for `[XmlConfigFile]`.
+ 3. Done, you can start compiling now.
 
-FASTBuild is a build system for Windows, OSX and Linux, supporting distributed compilation and object caching. It is used by many game developers, from small independent teams to some of the largest studios in the world.
+### Unreal Engine Shaders Building
+ 1. Compile this project: run FBuild.exe (official v1.04 release) `FBuild.exe All-x64-Release -dist -clean` in path `Code/`.
+ 2. Clone `tmp/x64-Release/Tools/FBuild/FBuild/FBuild.exe` and in `tmp/x64-Release/Tools/FBuild/FBuildWorker/FBuildWorker.exe` to `[UnrealEngine Source Code]/Engine/Extras/ThirdPartyNotUE/FASTBuild/Win64`.
+ 3. Clone `UnrealEgine/ShaderCompiler.h, ShaderCompiler.cpp, ShaderCompilerFASTBuild.cpp` to Unreal Engine.
+ 4. Build Unreal Engine.
+ 5. Done, next time you compile shader, it will automatically start distributed building.
 
-FASTBuild's focus is on fast compile times in both full build and local iteration scenarios.
+## Known Issues
+ - **Timeout.** FASTBuild's author recommends to use 1000M local network but I'm under a 100M one. Therefore it may lead to frequently timeout. Here's my personal experience for this issue(they work for me and hope they work for you too:smile: )
+    - If you are using cache, please make sure the cache path is properly written in bff file(or you can try to disable cache).
+    - If you are using many core machine, like 28 cores or more, you can try to lower the local compiling thread to 16.
 
-A large variety of compilers and target architectures are supported. More details, including hosted documentation and Binary downloads can
-be found here: http://fastbuild.org
-
-## Branch policy
-
-**Patches will only be accepted into the "dev" branch.**
-
-| Branch | Status | Purpose |
-| :----- | :----- | :----- |
-| master | [![Build Status](https://travis-ci.com/fastbuild/fastbuild.svg?branch=master)](https://travis-ci.com/fastbuild/fastbuild) | Stable branch containing snapshot of latest release |
-| dev    | [![Build Status](https://travis-ci.com/fastbuild/fastbuild.svg?branch=dev)](https://travis-ci.com/fastbuild/fastbuild) | Development branch for integration of pull requests |
-
-## Contribution Guidelines
-
-Improvements and bug fixes are gladly accepted. FASTBuild has been improved immensely by the contributions of many users. To help facilitate ease of integration, please:
-
-**Constrain pull requests to individual changes where possible** - Simple changes are more easily integrated and tested. Pull requests with many changes, where there are issues with one change in particular, will delay the integration of all changes. Pull requests that change or add large amounts of functionality are harder to test and will take much longer to integrate, increasing the likelyhood of conflicts.
-
-**Avoid refactoring and formatting changes mixed with functional changes** - Behavior altering changes (fixes, enhancements and new features) mixed with style changes or refactoring cleanup make changes more difficult to integrate. Please consider splitting these changes so they can more easily be individually integrated.
-
-**Update and extend tests if appropriate** - There are a large set of unit and functional tests. Please update or add new tests if appropriate.
-
-**Update documentation if appropriate** - For changes in behaviour, or addition of new features, please update the documentation.
-
-**Adhere to the coding style** - Please keep variable/function naming, whitespace style and indentation (4 space tabs) consistent. Consistency helps keep the code maintainable.
+## References
+ 1. For c++ compile problems: [FASTBuild documentation](https://www.fastbuild.org/docs/documentation.html)
+ 2. For shader compile problems: [FASTBuild issue 539](https://github.com/fastbuild/fastbuild/issues/539)

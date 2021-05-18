@@ -110,13 +110,13 @@ namespace UnrealBuildTool
 		/// Cache access mode - only relevant if bEnableCaching is true;
 		/// </summary>
 		[XmlConfigFile]
-		public static FASTBuildCacheMode CacheMode	= FASTBuildCacheMode.ReadOnly;
+		public static FASTBuildCacheMode CacheMode	= FASTBuildCacheMode.ReadWrite;
 
 		/// <summary>
 		/// Used to specify the location of the cache. If null, FASTBuild will fall back to checking FASTBUILD_CACHE_PATH
 		/// </summary>
 		[XmlConfigFile]
-		public static string FBuildCachePath		= null;
+		public static string FBuildCachePath		= "F:\\Cache";
 
 		/////////////////
 		// Misc Options
@@ -131,7 +131,7 @@ namespace UnrealBuildTool
 		/// Whether to stop on error
 		/// </summary>
 		[XmlConfigFile]
-		public static bool bStopOnError				= false;
+		public static bool bStopOnError				= true;
 
 		/// <summary>
 		/// Which MSVC CRT Redist version to use
@@ -857,6 +857,13 @@ namespace UnrealBuildTool
 				AddText($"\t\t'$Root$/c1xx.dll'\n");
 				AddText($"\t\t'$Root$/c2.dll'\n");
 
+				// ----- make vs2019 happy ----- //
+				AddText($"\t\t'$Root$/msvcp140_atomic_wait.dll'\n");
+				AddText($"\t\t'$Root$/vcruntime140.dll'\n");
+				AddText($"\t\t'$Root$/vcruntime140_1.dll'\n");
+				AddText($"\t\t'$Root$/1033/mspft140ui.dll'\n");
+				// ----- make vs2019 happy ----- //
+
 				FileReference cluiDllPath = null;
 				string cluiSubDirName = "1033";
 				if (File.Exists(VCEnv.GetToolPath() + "{cluiSubDirName}/clui.dll")) //Check English first...
@@ -968,7 +975,6 @@ namespace UnrealBuildTool
 			}
 
 			AddText("Settings \n{\n");
-
 			if (bEnableCaching)
 			{
 				string CachePath = GetCachePath();
@@ -1404,18 +1410,18 @@ namespace UnrealBuildTool
 				switch (CacheMode)
 				{
 					case FASTBuildCacheMode.ReadOnly:
-						CacheArgument = "-cacheread";
+						CacheArgument = "-cacheverbose -cacheread";
 						break;
 					case FASTBuildCacheMode.WriteOnly:
-						CacheArgument = "-cachewrite";
+						CacheArgument = "-cacheverbose -cachewrite";
 						break;
 					case FASTBuildCacheMode.ReadWrite:
-						CacheArgument = "-cache";
+						CacheArgument = "-cacheverbose -cache";
 						break;
 				}
 			}
 
-			string DistArgument				= bEnableDistribution ? "-dist" : "";
+			string DistArgument				= bEnableDistribution ? "-distverbose" : "";
 			string ForceRemoteArgument		= bForceRemote ? "-forceremote" : "";
 			string NoStopOnErrorArgument	= bStopOnError ? "" : "-nostoponerror";
 			string IDEArgument				= IsApple() ? "" : "-ide";
@@ -1425,7 +1431,7 @@ namespace UnrealBuildTool
 			// Yassine: The -clean is to bypass the FASTBuild internal
 			// dependencies checks (cached in the fdb) as it could create some conflicts with UBT.
 			// Basically we want FB to stupidly compile what UBT tells it to.
-			string FBCommandLine	= $"-monitor -summary {DistArgument} {CacheArgument} {IDEArgument} -clean -config \"{BffFilePath}\" {NoStopOnErrorArgument} {ForceRemoteArgument}";
+			string FBCommandLine	= $"-j16 -monitor -summary {DistArgument} {CacheArgument} {IDEArgument} -clean -config \"{BffFilePath}\" {NoStopOnErrorArgument} {ForceRemoteArgument}";
 
 			Log.TraceInformation($"FBuild Command Line Arguments: '{FBCommandLine}");
 
