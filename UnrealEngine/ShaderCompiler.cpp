@@ -466,7 +466,7 @@ static void SplitJobsByType(const TArray<TSharedRef<FShaderCommonCompileJob, ESP
 }
 
 // Serialize Queued Job information
-bool FShaderCompileUtilities::DoWriteTasks(const TArray<TSharedRef<FShaderCommonCompileJob, ESPMode::ThreadSafe>>& QueuedJobs, FArchive& TransferFile)
+bool FShaderCompileUtilities::DoWriteTasks(const TArray<TSharedRef<FShaderCommonCompileJob, ESPMode::ThreadSafe>>& QueuedJobs, FArchive& TransferFile, bool IsFASTBuild)
 {
 	int32 InputVersion = ShaderCompileWorkerInputVersion;
 	TransferFile << InputVersion;
@@ -478,9 +478,12 @@ bool FShaderCompileUtilities::DoWriteTasks(const TArray<TSharedRef<FShaderCommon
 
 	// Convert all the source directory paths to absolute, since SCW might be in a different directory to the editor executable
 	TMap<FString, FString> ShaderSourceDirectoryMappings = AllShaderSourceDirectoryMappings();
-	for(TPair<FString, FString>& Pair : ShaderSourceDirectoryMappings)
+	if (!IsFASTBuild)
 	{
-		Pair.Value = FPaths::ConvertRelativePathToFull(Pair.Value);
+		for (TPair<FString, FString>& Pair : ShaderSourceDirectoryMappings)
+		{
+			Pair.Value = FPaths::ConvertRelativePathToFull(Pair.Value);
+		}
 	}
 	TransferFile << ShaderSourceDirectoryMappings;
 
@@ -2118,6 +2121,7 @@ FShaderCompilingManager::FShaderCompilingManager() :
 	NumShaderCompilingThreadsDuringGame = FMath::Min<int32>(NumShaderCompilingThreadsDuringGame, NumShaderCompilingThreads);
 
 	bool bIsUsingXGEInterface = false;
+	bool bIsUsingFASTBuildInterface = false;
 
 #if PLATFORM_WINDOWS
 	const bool bCanUseRemoteCompiling = bAllowCompilingThroughWorkers && AllTargetPlatformSupportsRemoteShaderCompiling();
@@ -2136,8 +2140,15 @@ FShaderCompilingManager::FShaderCompilingManager() :
 		Thread = MakeUnique<FShaderCompileXGEThreadRunnable_XmlInterface>(this);
 		bIsUsingXGEInterface = true;
 	}
-	else
+	else if (FShaderCompileFASTBuildThreadRunnable::IsSupported())
+	{
+		UE_LOG(LogShaderCompilers, Display, TEXT("Using FASTBuild Shader Compiler."));
+		Thread = MakeUnique<FShaderCompileFASTBuildThreadRunnable>(this);
+		bIsUsingXGEInterface = true;
+		bIsUsingFASTBuildInterface = true;
+	}
 #endif // PLATFORM_WINDOWS
+	else
 	{
 		UE_LOG(LogShaderCompilers, Display, TEXT("Using Local Shader Compiler."));
 		Thread = MakeUnique<FShaderCompileThreadRunnable>(this);
