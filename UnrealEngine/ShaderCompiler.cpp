@@ -2147,8 +2147,8 @@ FShaderCompilingManager::FShaderCompilingManager() :
 		bIsUsingXGEInterface = true;
 		bIsUsingFASTBuildInterface = true;
 	}
-#endif // PLATFORM_WINDOWS
 	else
+#endif // PLATFORM_WINDOWS
 	{
 		UE_LOG(LogShaderCompilers, Display, TEXT("Using Local Shader Compiler."));
 		Thread = MakeUnique<FShaderCompileThreadRunnable>(this);
