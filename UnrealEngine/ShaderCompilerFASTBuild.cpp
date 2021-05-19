@@ -163,73 +163,68 @@ static FArchive* CreateFileHelper(const FString& Filename)
 	return File;
 }
 
-namespace
+static void MoveFileHelper(const FString& To, const FString& From)
 {
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
-	static void MoveFileHelper(const FString& To, const FString& From)
+	if (PlatformFile.FileExists(*From))
 	{
-		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-
-		if (PlatformFile.FileExists(*From))
+		FString DirectoryName;
+		int32 LastSlashIndex;
+		if (To.FindLastChar('/', LastSlashIndex))
 		{
-			FString DirectoryName;
-			int32 LastSlashIndex;
-			if (To.FindLastChar('/', LastSlashIndex))
-			{
-				DirectoryName = To.Left(LastSlashIndex);
-			}
-			else
-			{
-				DirectoryName = To;
-			}
-
-			// TODO: This logic came from FShaderCompileThreadRunnable::WriteNewTasks().
-			// We can't avoid code duplication unless we refactored the local worker too.
-
-			bool Success = false;
-			int32 RetryCount = 0;
-			// Retry over the next two seconds if we can't move the file.
-			// Anti-virus and indexing applications can interfere and cause this to fail.
-			while (!Success && RetryCount < 200)
-			{
-				if (RetryCount > 0)
-				{
-					FPlatformProcess::Sleep(0.01f);
-				}
-
-				// MoveFile does not create the directory tree, so try to do that now...
-				Success = PlatformFile.CreateDirectoryTree(*DirectoryName);
-				if (Success)
-				{
-					Success = PlatformFile.MoveFile(*To, *From);
-				}
-				RetryCount++;
-			}
-			checkf(Success, TEXT("Failed to move file %s to %s!"), *From, *To);
+			DirectoryName = To.Left(LastSlashIndex);
 		}
-	}
+		else
+		{
+			DirectoryName = To;
+		}
 
-	static void DeleteFileHelper(const FString& Filename)
-	{
 		// TODO: This logic came from FShaderCompileThreadRunnable::WriteNewTasks().
 		// We can't avoid code duplication unless we refactored the local worker too.
 
-		if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*Filename))
+		bool Success = false;
+		int32 RetryCount = 0;
+		// Retry over the next two seconds if we can't move the file.
+		// Anti-virus and indexing applications can interfere and cause this to fail.
+		while (!Success && RetryCount < 200)
 		{
-			bool bDeletedOutput = IFileManager::Get().Delete(*Filename, true, true);
-
-			// Retry over the next two seconds if we couldn't delete it
-			int32 RetryCount = 0;
-			while (!bDeletedOutput && RetryCount < 200)
+			if (RetryCount > 0)
 			{
 				FPlatformProcess::Sleep(0.01f);
-				bDeletedOutput = IFileManager::Get().Delete(*Filename, true, true);
-				RetryCount++;
 			}
-			checkf(bDeletedOutput, TEXT("Failed to delete %s!"), *Filename);
-		}
-	}
 
+			// MoveFile does not create the directory tree, so try to do that now...
+			Success = PlatformFile.CreateDirectoryTree(*DirectoryName);
+			if (Success)
+			{
+				Success = PlatformFile.MoveFile(*To, *From);
+			}
+			RetryCount++;
+		}
+		checkf(Success, TEXT("Failed to move file %s to %s!"), *From, *To);
+	}
+}
+
+static void DeleteFileHelper(const FString& Filename)
+{
+	// TODO: This logic came from FShaderCompileThreadRunnable::WriteNewTasks().
+	// We can't avoid code duplication unless we refactored the local worker too.
+
+	if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*Filename))
+	{
+		bool bDeletedOutput = IFileManager::Get().Delete(*Filename, true, true);
+
+		// Retry over the next two seconds if we couldn't delete it
+		int32 RetryCount = 0;
+		while (!bDeletedOutput && RetryCount < 200)
+		{
+			FPlatformProcess::Sleep(0.01f);
+			bDeletedOutput = IFileManager::Get().Delete(*Filename, true, true);
+			RetryCount++;
+		}
+		checkf(bDeletedOutput, TEXT("Failed to delete %s!"), *Filename);
+	}
 }
 
 void FShaderCompileFASTBuildThreadRunnable::PostCompletedJobsForBatch(FShaderBatch* Batch)

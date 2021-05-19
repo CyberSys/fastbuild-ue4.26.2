@@ -43,11 +43,12 @@ For example, if you are using Windows SDK 10.0.17763.0, version number in `Exter
  5. Done, next time you compile shader, it will automatically start distributed building.
 
 ## Issues and Solutions(maybe)
+ - **Compilation.** There may be errors about `FileHelper` functions when compiling `ShaderCompilerXGE.cpp` and `ShaderCompilerFASTBuild.cpp`. Add an anonymous namespace, or rename these functions may work.
  - **Timeout.** FASTBuild's author recommends to use 1000M local network but I'm under a 100M one. Therefore it may lead to frequently timeout. Here's my personal experience for this issue(they work for me and hope they work for you too:smile: )
     - If you are using cache, please make sure the cache path is properly written in bff file(or you can try to disable cache).
     - If you are using many core machine, like 28 cores or more, you can try to lower the local compiling thread to 16.
  - **Distributed shader compilation is much more slower than local.** If any remote machine didn't install DirectX, the whole compilation will failed. You need to check `%TEMP%/FASTBuild/FastBuildLog.log` to find which remote is the blacksheep. Then you should [download DirectX from here](https://www.microsoft.com/en-us/download/details.aspx?id=35).
- - **Cache path is not correct.** 
+ - **Cache path is not correct.** Please refer to Usage section.
 
 ## References
  1. For c++ compile problems: [FASTBuild documentation](https://www.fastbuild.org/docs/documentation.html)
