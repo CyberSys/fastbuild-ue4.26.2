@@ -20,7 +20,7 @@ For example, if you are using Windows SDK 10.0.17763.0, version number in `Exter
 
 **Some Notes:**
  - Please use the latest source code in this repo. Commits listed above work only as references for your own modification.
- - Some bugs about FASTBuild cache path frequently happened. Therefore, I hard-coded cache path in `UnrealEngine/*`. Please find `F:\\Cache` and modify them to your own cache path.
+ - Some bugs about FASTBuild cache path frequently happened. Therefore, I hard-coded cache path in `UnrealEngine/ShaderCompilerFASTBuild.cpp` and `UnrealEngine/FASTBuild.cs`. **Please find `F:\\Cache` and modify them to your own cache path.**
 
 ### Unreal Engine Source Code Building
  1. Compile this project: run FBuild.exe (official v1.04 release) `FBuild.exe All-x64-Release -dist -clean` in path `Code/`.
